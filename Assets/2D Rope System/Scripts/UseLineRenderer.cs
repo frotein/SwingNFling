@@ -70,6 +70,7 @@ public class UseLineRenderer : MonoBehaviour {
 		startChainCount = chains.Count;
 		
 		started = true;
+		lineRend.enabled = false;
 	}
 
 
@@ -114,6 +115,8 @@ public class UseLineRenderer : MonoBehaviour {
 			for(int i = 0; i < chains.Count; i++)
 				lineRend.SetPosition (i, chains[i].position);
 		}
+
+		lineRend.enabled = true;
 	}
 
 

@@ -12,7 +12,7 @@ public class Rope_Shooter : MonoBehaviour {
 	GameObject connectedObject;
 	int delay = 0;
 	Rope2D rope;
-	
+	bool connectedThisFrame;
 	// Use this for initialization
 	void Start () 
 	{
@@ -27,7 +27,9 @@ public class Rope_Shooter : MonoBehaviour {
 	// Update is called once per frame
 	void Update () 
 	{
-		if(Controls.Clicked()) // if you click, raycast in 2d from the character towards the clicked point
+		
+
+		if(Controls.Clicked() && !connectedToRope) // if you click, raycast in 2d from the character towards the clicked point
 		{
 			Vector3 pos = Controls.ClickedPosition();
 			RaycastHit2D[] hits = Physics2D.RaycastAll((Vector2)transform.position, new Vector2(pos.x - transform.position.x,pos.y - transform.position.y).normalized);
@@ -36,23 +38,25 @@ public class Rope_Shooter : MonoBehaviour {
 				foreach(RaycastHit2D hit in hits)
 				{
 				
-					if(hit.transform.name != "box") // if you hit something that isnt the character, connect the rope to the first object 
+					if(hit.transform.name != "box" && !hit.collider.isTrigger) // if you hit something that isnt the character, connect the rope to the first object 
 					{
+						
 						ConnectionToPosition(hit.point);
+						connectedThisFrame = true;
 						break;		
 					}
 				}
 			}		
 		}
 
-		if(Controls.Released() && connectedToRope) // if you release, disconnect the rope.
+		if(Controls.Clicked() && connectedToRope && !connectedThisFrame) // if you release, disconnect the rope.
 		{
 			rope.Remove();	
 			objectHolder = new GameObject("rope holder");
 			connectedToRope = false;
 		}
 		
-		
+		connectedThisFrame = false;
 	}
 
 	// check whether point a is to the left or right of the 2d line defined by 2 points in it b and c
@@ -104,6 +108,7 @@ public class Rope_Shooter : MonoBehaviour {
 	// Connects the rope to the player and a given position pos
 	void ConnectionToPosition(Vector2 pos)
 	{		
+		objectHolder.transform.position = new Vector3(objectHolder.transform.position.x,objectHolder.transform.position.y, 0);
 		transform.GetComponent<DistanceJoint2D>().enabled = true;
 		if(connectedObject != null)
 		GameObject.Destroy(connectedObject);
@@ -111,13 +116,13 @@ public class Rope_Shooter : MonoBehaviour {
 		connectedObject = GameObject.Instantiate(otherObject.gameObject);
 		Vector2 vel = transform.GetComponent<Rigidbody2D>().velocity;
 		connectedObject.transform.position = new Vector3(pos.x,pos.y,0);
-		rope.CreateRope(objectHolder, chainObject, transform, connectedObject.transform, false,false,true,true, false, false, ropeMat,10);
+		rope.CreateRope(objectHolder, chainObject, transform, connectedObject.transform, false,false,true,true, false, true, ropeMat,.1f);
 		lastChain = objectHolder.transform.GetChild(objectHolder.transform.childCount - 1).gameObject;
 		lastChain2 = objectHolder.transform.GetChild(objectHolder.transform.childCount - 2).gameObject; 
 		lastChain.GetComponent<Rigidbody2D>().isKinematic = true;
 		transform.GetComponent<Rigidbody2D>().isKinematic = false;	
 		transform.GetComponent<Rigidbody2D>().velocity = vel;
-		
+		objectHolder.transform.position = new Vector3(objectHolder.transform.position.x,objectHolder.transform.position.y, 1);
 		connectedToRope = true;
 	}
 

@@ -15,6 +15,8 @@ public static class Controls
 		#if UNITY_ANDROID
 		return (touchCount == 0 && Input.touchCount == 1);
 		#endif
+	
+		touchCount = Input.touchCount;
 	}
 
 	public static Vector2 ClickedPosition() // must make sure clicked is true
@@ -38,8 +40,10 @@ public static class Controls
 		#endif
 
 		#if UNITY_ANDROID
-		return (touchCount == 1 && Input.touchCount == 0);
+		return (Input.touchCount == 0); //touchCount == 1 && 
 		#endif		
+
+		touchCount = Input.touchCount;
 	}
 
 	public static void SetTouchCount() // must be called at the end of the frame

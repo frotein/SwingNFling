@@ -35,9 +35,11 @@ public class Rope2D
 		Quaternion newRotation;
 		bool connected = false;
 		Transform tempChain = null;
-
+		float dist = Vector3.Distance(pointA.position, pointB.position);
+		//Debug.Log(dist);
+		float chainCount = (dist / (chainObject.GetComponent<Renderer>().bounds.extents.x * 1.9f));
 		//calculate how many chains is needed from pointA to pointB
-		remainChainCount = (int)(Vector3.Distance(pointA.position, pointB.position) / (chainObject.GetComponent<Renderer>().bounds.extents.x * 1.9f));
+		remainChainCount = (int) chainCount;
 		
 		//while rope isn't connected to end point
 		while (!connected)
@@ -192,6 +194,7 @@ public class Rope2D
 					var useLinerend = objectsHolder.AddComponent<UseLineRenderer>();
 					useLinerend.ropeMaterial = ropeMat;
 					useLinerend.width = ropeWidth;
+					//useLinerend.enabled = false;
 				}
 
 				connected = true;
